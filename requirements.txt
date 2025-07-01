@@ -1,0 +1,8 @@
+torch==2.2.2
+transformers
+safetensors
+numpy<2.0
+urllib3<2.0
+datasets
+scikit-learn
+tqdm
