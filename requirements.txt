@@ -6,3 +6,4 @@ urllib3<2.0
 datasets
 scikit-learn
 tqdm
+accelerate>=0.26.0

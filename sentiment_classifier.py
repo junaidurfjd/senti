@@ -51,21 +51,30 @@ class SentimentClassifier:
         train_dataset = dataset['train'].select(range(train_samples))
         test_dataset = dataset['validation'].select(range(test_samples))
         
-        # Tokenize datasets
+        def tokenize_function(examples):
+            return self.tokenizer(
+                examples['sentence'],
+                padding='max_length',
+                truncation=True,
+                max_length=self.max_length
+            )
+            
         train_encodings = train_dataset.map(
-            self.preprocess_function, 
+            tokenize_function,
             batched=True,
-            remove_columns=['sentence', 'idx', 'label']
-        )
-        test_encodings = test_dataset.map(
-            self.preprocess_function,
-            batched=True,
-            remove_columns=['sentence', 'idx', 'label']
+            remove_columns=['sentence', 'idx']
         )
         
-        # Convert to PyTorch format
-        train_encodings.set_format(type='torch', columns=['input_ids', 'attention_mask', 'label'])
-        test_encodings.set_format(type='torch', columns=['input_ids', 'attention_mask', 'label'])
+        test_encodings = test_dataset.map(
+            tokenize_function,
+            batched=True,
+            remove_columns=['sentence', 'idx']
+        )
+        
+        train_encodings.set_format(type='torch', 
+                                 columns=['input_ids', 'attention_mask', 'token_type_ids', 'label'])
+        test_encodings.set_format(type='torch',
+                                 columns=['input_ids', 'attention_mask', 'token_type_ids', 'label'])
         
         return train_encodings, test_encodings
 
@@ -86,7 +95,7 @@ class SentimentClassifier:
             weight_decay=0.01,
             logging_dir='./logs',
             logging_steps=10,
-            evaluation_strategy='epoch',
+            eval_strategy='epoch',
             save_strategy='epoch',
             load_best_model_at_end=True,
             metric_for_best_model='f1',
@@ -104,7 +113,6 @@ class SentimentClassifier:
         logger.info("Starting training...")
         trainer.train()
         
-        # Evaluate on test set
         logger.info("Evaluating on test set...")
         eval_results = trainer.evaluate()
         logger.info(f"Test results: {eval_results}")
@@ -129,7 +137,6 @@ class SentimentClassifier:
             
         sentiment = self.id2label[pred_label]
         
-        # Log the prediction
         self.log_prediction(text, sentiment, confidence)
         
         return sentiment, confidence

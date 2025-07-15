@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+.venv/
+env/
+ENV/
+
+# IDE specific
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+sentiment_log.txt
+training.log
+
+# Model files
+*.safetensors
+*.bin
+*.h5
+*.ckpt
+*.pt
+*.pth
+
+# Dataset files
+*.parquet
+*.arrow
+
+# Results directory
+results/
